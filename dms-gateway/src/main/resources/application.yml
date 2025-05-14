@@ -1,0 +1,35 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: dms-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: auth-service
+          uri: lb://dms-auth-service
+          predicates:
+            - Path=/api/auth/**
+        - id: user-service
+          uri: lb://dms-user-service
+          predicates:
+            - Path=/api/users/**, /api/departments/**
+        - id: document-service
+          uri: lb://dms-document-service
+          predicates:
+            - Path=/api/documents/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+jwt:
+  secret: ${JWT_SECRET:veryLongAndSecureJwtSecretKeyForDmsApplication}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
